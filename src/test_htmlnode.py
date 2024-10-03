@@ -10,7 +10,7 @@ from textnode import TextNode
 
 from text_node_to_html import text_node_to_html_node
 
-from md_to_textnode import split_nodes_delimiter,extract_markdown_images,extract_markdown_links
+from md_to_textnode import split_nodes_delimiter,extract_markdown_images,extract_markdown_links,split_nodes_images,split_nodes_links,text_to_textnodes
 
 class TestHTMLNODE(unittest.TestCase):
     def test_props(self):
@@ -39,7 +39,7 @@ class TestHTMLNODE(unittest.TestCase):
 
 class TestTextNode(unittest.TestCase):
     def test_textnode(self):
-        textnode1 = TextNode(text = "krill *yousef* joder *now*", text_type= "text")
+        textnode1 = TextNode(text = "hello everynyan *how* are you", text_type= "text")
         textnode2 = TextNode(text = "`hola`", text_type= "text")
         textnode3 = TextNode(text = "*ufa*", url="fuera" ,text_type="text")
         print("\n TEST TEXTNODE TO HTML")
@@ -51,11 +51,18 @@ class TestTextNode(unittest.TestCase):
 
 class TestRegex(unittest.TestCase):
     def test_regex(self):
-        string = "![a picture of a ghost](ghostadventures.gif) and [fortnite](battlepass)"
-        string2 = "![black people only](idk.com)"
+        string = "`yahoo` *im killing it* fortnite ![a picture of a ghost](ghostadventures.gif) **and** ![fortnite](battlepass), did they do it?? ![chronic schizo](salt.png)[link](hyper.link)"
+        string2 = "hello ![black people only](idk.com)"
+        node1 = TextNode(string,"text")
+        node2 =  TextNode(string2,"text")
         print("\n TESTING REGEX")
         print(extract_markdown_images(string))
         print(extract_markdown_links(string2))
+        print(split_nodes_images([node1,node2]))
+        print(split_nodes_links([node1,node2]))
+        print("FINAL FUNCTION! \n")
+        print(text_to_textnodes(node1.text))
+        print("\n")
 
 if __name__ == "__main__":
     unittest.main()
