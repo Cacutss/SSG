@@ -10,7 +10,7 @@ from textnode import TextNode
 
 from text_node_to_html import text_node_to_html_node
 
-from md_to_textnode import split_nodes_delimiter,extract_markdown_images,extract_markdown_links,split_nodes_images,split_nodes_links,text_to_textnodes
+from md_to_textnode import *
 
 class TestHTMLNODE(unittest.TestCase):
     def test_props(self):
@@ -64,5 +64,18 @@ class TestRegex(unittest.TestCase):
         print(text_to_textnodes(node1.text))
         print("\n")
 
+class TestMdtoBlocks(unittest.TestCase):
+    def test_md_to_blocks(self):
+        print("\n FINAL")
+        string = open("test.md","r")
+        block1 = markdown_to_blocks(string)
+        print(blocks_to_type_blocks(block1[2]))
+        print(block1)
+        string.close()
+
+class TestMdToHtmlNode(unittest.TestCase):
+    def test_md_to_html_node(self):
+        print("\n ULTRA MEGA ALMOST FINAL FUNCTION")
+        print(markdown_to_html_node("./test.md"))
 if __name__ == "__main__":
     unittest.main()

@@ -1,5 +1,7 @@
 from textnode import TextNode
 
+from htmlnode import HTMLNODE
+
 import re
 
 def split_nodes_delimiter(old_nodes,delimiter,text_type):
@@ -97,3 +99,39 @@ def text_to_textnodes(text):
     result3 = split_nodes_images(result2)
     result4 = split_nodes_links(result3)
     return result4
+
+def markdown_to_blocks(markdown : list):
+    result = []
+    current = ""
+    for line in markdown:
+        if line == "\n":
+            result.append(current)
+            current = ""
+            continue
+        current += line.strip()
+    result.append(current)
+    return result
+
+def blocks_to_type_blocks(block : str):
+    types = {">" : "quote",
+            "#" : "h",
+            "```" : "code",
+            "* " : "ul",
+            "- " : "ul",
+            ". " : "ol"}
+    string = ''
+    for i in range(0,len(block)):
+        string += block[i]
+        if string in types.keys():
+            return types[string]
+        if i > 3:
+            return "p"
+
+def markdown_to_html_node(markdown):
+    string = open(markdown,"r")
+    blocks = markdown_to_blocks(string)
+    result = HTMLNODE(tag="div",children=[])
+    for i in range(0,len(blocks)):
+        type = blocks_to_type_blocks
+        result.children.append(HTMLNODE(tag=type,value=blocks[i]))
+    string.close()
