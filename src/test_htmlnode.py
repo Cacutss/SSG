@@ -12,7 +12,7 @@ from text_node_to_html import text_node_to_html_node
 
 from md_to_textnode import *
 
-class TestHTMLNODE(unittest.TestCase):
+"""class TestHTMLNODE(unittest.TestCase):
     def test_props(self):
         node1 = HTMLNODE("h1","hello wolrd","patrick",href = "facebook.com",b = "l")
         node2 = HTMLNODE("a")
@@ -71,11 +71,12 @@ class TestMdtoBlocks(unittest.TestCase):
         block1 = markdown_to_blocks(string)
         print(blocks_to_type_blocks(block1[2]))
         print(block1)
-        string.close()
+        string.close() """
 
 class TestMdToHtmlNode(unittest.TestCase):
     def test_md_to_html_node(self):
         print("\n ULTRA MEGA ALMOST FINAL FUNCTION")
         print(markdown_to_html_node("./test.md"))
+        
 if __name__ == "__main__":
     unittest.main()

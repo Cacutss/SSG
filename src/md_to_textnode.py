@@ -1,6 +1,8 @@
-from textnode import TextNode
+from textnode import *
 
-from htmlnode import HTMLNODE
+from htmlnode import *
+
+from text_node_to_html import text_node_to_html_node
 
 import re
 
@@ -90,7 +92,6 @@ def split_nodes_links(old_nodes : list[TextNode]):
         resulting_nodes.append(old_nodes_copy[0])
     resulting_nodes.extend(split_nodes_links(old_nodes_copy[1:]))
     return resulting_nodes
-    
 
 def text_to_textnodes(text):
     result = split_nodes_delimiter([TextNode(text,text_type="text")],"**","bold")
@@ -113,25 +114,79 @@ def markdown_to_blocks(markdown : list):
     return result
 
 def blocks_to_type_blocks(block : str):
-    types = {">" : "quote",
+    types = {">" : "blockquote",
             "#" : "h",
             "```" : "code",
             "* " : "ul",
             "- " : "ul",
-            ". " : "ol"}
+            "1." : "ol"}
     string = ''
+    count = 0
     for i in range(0,len(block)):
         string += block[i]
-        if string in types.keys():
+        if count > 0 and block[i] == " ":
+            return f"h{count}"
+        elif "#" == string[i]:
+            count += 1
+        elif string in types.keys():
             return types[string]
-        if i > 3:
+        elif i > 3:
             return "p"
+
+def split_block_type(block : str,type : str) -> str:
+    result = block
+    if type == "ul":
+        result = block.split("* ")
+        if len(result) == 1:
+            result = block.split("- ")
+        return result
+    elif type == "ol":
+        i = 1
+        while i >= 1:
+            if f"{i}." in result:
+                result = result.replace(f"{i}. ","* ")
+                i += 1
+            else:
+                i = 0
+        return result.split("* ")
+    elif type == "blockquote":
+        result = block.split("> ")
+        return result[1]
+    elif type == "code":
+        result = block.split("```")
+        return result[1]
+    return result
+   
+
+def block_to_html_node(block):
+    node = ParentNode()
+    type = blocks_to_type_blocks(block)
+    node.tag = type
+    if type == "ul" or type == "ol":
+        ulist = split_block_type(block,type)
+        for i in range(0,len(ulist)):
+            if ulist[i] == "":
+                continue
+            nodes = text_to_textnodes(ulist[i])
+            res = ParentNode(tag="li")
+            for j in range(0,len(nodes)):
+                res.children.append(text_node_to_html_node(nodes[j]))
+            node.children.append(res)
+    else:
+        if "h" in type:
+            textnodes = text_to_textnodes(block[(int(type[1])+1):])
+        else:
+            split = split_block_type(block,type)
+            textnodes = text_to_textnodes(split)
+        for textnode in textnodes:
+            node.children.append(text_node_to_html_node(textnode))
+    return node
 
 def markdown_to_html_node(markdown):
     string = open(markdown,"r")
     blocks = markdown_to_blocks(string)
-    result = HTMLNODE(tag="div",children=[])
+    result = ParentNode(tag="div")
     for i in range(0,len(blocks)):
-        type = blocks_to_type_blocks
-        result.children.append(HTMLNODE(tag=type,value=blocks[i]))
+        result.children.append(block_to_html_node(blocks[i]))
     string.close()
+    return result

@@ -35,7 +35,9 @@ class LeafNode(HTMLNODE):
         
         
 class ParentNode(HTMLNODE):
-    def __init__(self,tag = None,value= None,children:list[LeafNode] = None,**kwargs):
+    def __init__(self,tag = None,value= None,children = None,**kwargs):
+        if children is None:
+            children = []
         super().__init__(tag,value,children,**kwargs)
 
     def to_html(self):
@@ -46,7 +48,7 @@ class ParentNode(HTMLNODE):
         string = ""
         for child in self.children:
             string += child.to_html()
-        return f"<{self.tag}{super().props_to_html()}>{string}</{self.tag}>"
+        return f"\n<{self.tag}{super().props_to_html()}>{string}</{self.tag}>"
 
 
     
